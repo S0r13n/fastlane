@@ -109,7 +109,13 @@ module Frameit
 
     # Horizontal adding around the frames
     def horizontal_frame_padding
-      padding = fetch_config['padding']
+      config = fetch_config
+
+      # get device specific config if available
+      config = fetch_config[self.screenshot.device_name] if fetch_config[self.screenshot.device_name]
+
+      padding = config['h_padding']
+
       unless padding.kind_of?(Integer)
         padding = padding.split('x')[0].to_i
       end
@@ -118,7 +124,13 @@ module Frameit
 
     # Vertical adding around the frames
     def vertical_frame_padding
-      padding = fetch_config['padding']
+      config = fetch_config
+
+      # get device specific config if available
+      config = fetch_config[self.screenshot.device_name] if fetch_config[self.screenshot.device_name]
+
+      padding = config['v_padding']
+
       unless padding.kind_of?(Integer)
         padding = padding.split('x')[1].to_i
       end

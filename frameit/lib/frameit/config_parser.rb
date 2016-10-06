@@ -84,9 +84,15 @@ module Frameit
             UI.user_error!("Invalid color '#{value}'. Must be valid Hex #123123") unless value.include?("#")
           end
 
-          if key == 'padding'
+          if key == 'v_padding'
             unless value.kind_of?(Integer) || value.split('x').length == 2
-              UI.user_error!("padding must be type integer or pair of integers of format 'AxB'")
+              UI.user_error!("v_padding must be type integer or pair of integers of format 'AxB'")
+            end
+          end
+
+          if key == 'h_padding'
+            unless value.kind_of?(Integer) || value.split('x').length == 2
+              UI.user_error!("h_padding must be type integer or pair of integers of format 'AxB'")
             end
           end
         end

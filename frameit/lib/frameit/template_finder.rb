@@ -1,6 +1,7 @@
 module Frameit
   # Responsible for finding the correct device
   class TemplateFinder
+
     class FilenameTransform
       def initialize(device_name)
         @device_name = device_name
@@ -42,8 +43,8 @@ module Frameit
       'iPhone-SE' => Type3Transform.new('iPhone-SE'),
       'iPad-Pro' => Type2Transform.new('iPad-Pro'),
       'iPad-mini' => Type2Transform.new('iPad-mini'),
-      'iPhone-6s' => Type2Transform.new('iPhone-6s'),
-      'iPhone-6s-Plus' => Type2Transform.new('iPhone-6s-Plus')
+      'iPhone-7' => Type2Transform.new('iPhone-7'),
+      'iPhone-7-Plus' => Type2Transform.new('iPhone-7-Plus')
     }
 
     # This will detect the screen size and choose the correct template

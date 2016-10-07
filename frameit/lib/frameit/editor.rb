@@ -187,8 +187,8 @@ module Frameit
 
       # sum_width: the width of both labels together including the space inbetween
       #   is used to calculate the ratio
+      #sum_width = title.width
       sum_width = title.width
-      sum_width += keyword.width + keyword_padding if keyword
 
       # Resize the 2 labels if necessary
       smaller = 1.0 # default
@@ -206,35 +206,44 @@ module Frameit
 
       vertical_padding = vertical_frame_padding
       top_space = vertical_padding
-      left_space = (background.width / 2.0 - sum_width / 2.0).round
+      left_space_keyword = ((background.width - keyword.width) / 2.0).round
+      left_space_title = ((background.width - title.width) / 2.0).round
 
-      self.top_space_above_device += title.height + vertical_padding
+      font_size_title = fontSize("title")
+      font_size_keyword = fontSize("keyword")
+      self.top_space_above_device += font_size_title*2 + font_size_keyword + vertical_padding + 10
 
       # First, put the keyword on top of the screenshot, if we have one
       if keyword
         background = background.composite(keyword, "png") do |c|
           c.compose "Over"
-          c.geometry "+#{left_space}+#{top_space}"
+          c.geometry "+#{left_space_keyword}+#{top_space}"
         end
-
-        left_space += keyword.width + (keyword_padding * smaller)
       end
+
+      top_space += (font_size_keyword + 10) if keyword
 
       # Then, put the title on top of the screenshot next to the keyword
       background = background.composite(title, "png") do |c|
         c.compose "Over"
-        c.geometry "+#{left_space}+#{top_space}"
+        c.geometry "+#{left_space_title}+#{top_space}"
       end
       background
     end
 
-    def actual_font_size
-      [@image.width / 10.0].max.round
+    def actual_font_size(key)
+      size = [@image.width / 15.0].max.round
+
+      if key.to_s == "keyword"
+        size = [@image.width / 11.0].max.round
+      end
+
+      return size
     end
 
     # The space between the keyword and the title
     def keyword_padding
-      (actual_font_size / 2.0).round
+      (actual_font_size("keyword") / 2.0).round
     end
 
     # This will build 2 individual images with the title, which will then be added to the real image
@@ -252,6 +261,8 @@ module Frameit
         end
 
         current_font = font(key)
+        current_font_size = fontSize(key)
+
         text = fetch_text(key)
         UI.verbose("Using #{current_font} as font the #{key} of #{screenshot.path}") if current_font
         UI.verbose("Adding text '#{text}'")
@@ -265,7 +276,7 @@ module Frameit
         title_image.combine_options do |i|
           i.font current_font if current_font
           i.gravity "Center"
-          i.pointsize actual_font_size
+          i.pointsize current_font_size
           i.draw "text 0,0 '#{text}'"
           i.interline_spacing interline_spacing if interline_spacing
           i.fill fetch_config[key.to_s]['color']
@@ -338,5 +349,59 @@ module Frameit
       UI.verbose("No custom font specified for #{screenshot}, using the default one")
       return nil
     end
+
+    # The font we want to use
+    def fontSize(key)
+      max_fontSize = actual_font_size(key)
+      single_fontSize = fetch_config[key.to_s]['fontSize']
+
+      if single_fontSize
+        if single_fontSize > max_fontSize
+          UI.verbose("FontSize for #{key} = #{single_fontSize} is too big using #{max_fontSize} instead \n")
+          single_fontSize = max_fontSize
+        else
+          UI.verbose("FontSize for #{key} = #{single_fontSize}\n")
+        end
+        return single_fontSize
+      end
+
+      fontSizes = fetch_config[key.to_s]['fontSize']
+      if fontSizes
+        fontSizes.each do |fontSize|
+          if fontSize['supported']
+            fontSize['supported'].each do |language|
+              if screenshot.path.include? language
+                size = fontSize["fontSize"]
+                if size > max_fontSize
+                  UI.verbose("FontSize for #{key} = #{size} is too big using #{max_fontSize} instead \n")
+                  size = max_fontSize
+                else
+                  UI.verbose("FontSize for #{key} = #{size}\n")
+                end
+                return size
+              end
+            end
+          else
+            # No `supported` array, this will always be true
+            size = fontSize["fontSize"]
+            if size > max_fontSize
+              print("FontSize for #{key} = #{size} is too big using #{max_fontSize} instead \n")
+              size = max_fontSize
+            else
+              print("FontSize for #{key} = #{size}\n")
+            end
+
+            UI.verbose("Found a fontSize with no list of supported languages, using this now")
+            return size
+          end
+        end
+      end
+
+      UI.verbose("FontSize for #{key} = #{max_fontSize}\n")
+      UI.verbose("No custom fontSize specified for #{screenshot}, using the default one")
+      return max_fontSize
+    end
   end
+
+
 end

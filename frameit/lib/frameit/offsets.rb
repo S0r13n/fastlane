@@ -40,11 +40,6 @@ module Frameit
             'width' => 737
           }
         when size::IOS_IPAD_PRO
-        #  return {
-        #    'offset' => '+48+90',
-        #    'width' => 805
-        #  }
-        #when size::IOS_IPAD_PRO_12
           return {
             'offset' => '+71+133',
             'width' => 896
@@ -85,11 +80,6 @@ module Frameit
             'width' => 983
           }
         when size::IOS_IPAD_PRO
-        #  return {
-        #    'offset' => '+88+48',
-        #    'width' => 1075
-        #  }
-        #when size::IOS_IPAD_PRO_12
           return {
             'offset' => '+212+153',
             'width' => 1076

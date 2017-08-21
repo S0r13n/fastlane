@@ -41,6 +41,7 @@ module Frameit
 
     DEVICE_TO_TRANSFORM_TYPE = {
       'iPhone-SE' => Type3Transform.new('iPhone-SE'),
+      'iPad-Pro-7_9' => Type2Transform.new('Pad-Pro-7_9'),
       'iPad-Pro' => Type2Transform.new('iPad-Pro'),
       'iPad-mini' => Type2Transform.new('iPad-mini'),
       'iPhone-7' => Type2Transform.new('iPhone-7'),
